@@ -21,9 +21,19 @@ void setup() {
   stepper2.setMaxSpeed(200);
 }
 
+int speedroller;
+
 void loop() {
   // SLIDER
-  if (digitalRead(4) == LOW) {
+  if (Serial.available()>0) {
+    String data = Serial.readStringUntil('\n');
+    int a = data.toInt();
+    float b = (1.2 * a) / 9;
+    speedroller = (b * 1600) / 60;
+  
+  }
+
+  if (digitalRead(3) == LOW) {
   if (digitalRead(limitswitch1) == LOW) {
     nilai = 0;
     // Serial.println("Nilai: 0 (Switch 1 ditekan)");
@@ -53,16 +63,16 @@ void loop() {
   }
   
   // ROLLER
-  if (digitalRead(3) == LOW) {
+  if (digitalRead(4) == LOW) {
     int potVal = analogRead(potPin);
     kecepatanrol = map(potVal, 511, 1024, 80, 30);
     // stepper2.setSpeed(100);  // Set kecepatan motor stepper2 (dalam langkah per detik)
-    stepper2.setSpeed(kecepatanrol);  // Set kecepatan motor stepper2 (dalam langkah per detik)
+    stepper2.setSpeed(speedroller);  // Set kecepatan motor stepper2 (dalam langkah per detik)
     stepper2.runSpeed();    // Jalankan motor stepper2
   } else {
     stepper2.setSpeed(0);  // Set kecepatan motor stepper2 (dalam langkah per detik)
     stepper2.runSpeed();    // Jalankan motor stepper2
     stepper2.stop();  // Menghentikan motor stepper2
   }
-    Serial.println(kecepatanrol);
+    Serial.println(speedroller);
 }
